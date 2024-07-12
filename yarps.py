@@ -121,23 +121,25 @@ class TextTickerApp:
         drag_index = self.drag_data['index']
         drop_index = self.queue_listbox.nearest(event.y)
         if drag_index != drop_index:
-            self.queue[drag_index], self.queue[drop_index] = self.queue[drop_index], self.queue[drag_index]
+            self.move_singer(drag_index, drop_index)
             self.update_listbox()
+
+    def move_singer(self, from_index, to_index):
+        singer = self.queue.pop(from_index)
+        self.queue.insert(to_index, singer)
 
     def move_to_next_in_queue(self):
         selected_index = self.queue_listbox.curselection()
         if selected_index:
             index = selected_index[0]
-            singer = self.queue.pop(index)
-            self.queue.insert(1, singer)
+            self.move_singer(index, 1)
             self.update_listbox()
 
     def move_to_bottom_of_queue(self):
         selected_index = self.queue_listbox.curselection()
         if selected_index:
             index = selected_index[0]
-            singer = self.queue.pop(index)
-            self.queue.append(singer)
+            self.move_singer(index, len(self.queue) - 1)
             self.update_listbox()
 
     def update_listbox(self):
