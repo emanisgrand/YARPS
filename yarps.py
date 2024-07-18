@@ -75,6 +75,7 @@ class TextTickerApp:
         self.state_combobox.bind("<<ComboboxSelected>>", self.change_ticker_state)
 
         self.queue = []
+        self.singer_cache = {}
         self.running = True
 
         # Launch Ticker Window
@@ -84,19 +85,36 @@ class TextTickerApp:
         entry_text = self.singer_entry.get()
         if entry_text:
             name, song = entry_text.split("-", 1)
-            new_singer = Singer(name.strip(), song.strip(), self.entry_counter)
-            self.queue.append(new_singer)
-            self.queue_listbox.insert(tk.END, f"{self.entry_counter}. {new_singer}")
-            self.entry_counter += 1
+            name = name.strip().title()
+            song = song.strip()
+
+            if name in self.singer_cache:
+                singer = self.singer_cache[name]
+                singer.add_song(song)
+                singer.set_current_song(song)
+            else:
+                singer = Singer(name, song, self.entry_counter)
+                self.singer_cache[name] = singer
+                self.entry_counter += 1
+
+            self.queue.append(singer)
+            self.update_listbox()
             self.singer_entry.delete(0, tk.END)
             self.ticker_window.update_queue(self.queue)
 
     def remove_from_queue(self):
         selected_index = self.queue_listbox.curselection()
         if selected_index:
-            self.queue_listbox.delete(selected_index)
             del self.queue[selected_index[0]]
+            self.update_listbox()
             self.ticker_window.update_queue(self.queue)
+
+    def update_listbox(self):
+        self.queue_listbox.delete(0, tk.END)
+        for i, singer in enumerate(self.queue, 1):
+            self.queue_listbox.insert(tk.END, f"{i}. {singer}")
+            self.queue_listbox.itemconfigure(tk.END, **singer.get_display_style())
+        self.ticker_window.update_queue(self.queue)
 
     def display_singer_info(self, event):
         selected_index = self.queue_listbox.curselection()
@@ -104,7 +122,11 @@ class TextTickerApp:
             selected_singer = self.queue[selected_index[0]]
             self.info_text.config(state="normal")
             self.info_text.delete(1.0, tk.END)
-            self.info_text.insert(tk.END, f"Name: {selected_singer.name}\nSong: {selected_singer.song}\nEntry Number: {selected_singer.entry_number}")
+            self.info_text.insert(tk.END, f"Name: {selected_singer.name}\n"
+                                          f"Current Song: {selected_singer.current_song}\n"
+                                          f"Entry Number: {selected_singer.entry_number}\n"
+                                          f"Performance Count: {selected_singer.performance_count}\n"
+                                          f"All Songs: {', '.join(selected_singer.songs)}")
             self.info_text.config(state="disabled")
 
     def change_ticker_state(self, event):

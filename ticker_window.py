@@ -28,11 +28,11 @@ class TickerWindow:
                 if self.queue:
                     if self.state == "current_singer_only":
                         current_text = str(self.queue[0])
-                        display_text = " " * (self.ticker_window.winfo_width() // 10) + current_text + "    "  # Initial spaces to start off-screen and add spaces to separate items
+                        display_text = " " * (self.ticker_window.winfo_width() // 10) + current_text + "    "
                     elif self.state == "full_queue_display":
-                        current_text = "Up next: " + self.queue[1].name if len(self.queue) > 1 else ""
-                        following_singers = ["Followed by: " + singer.name for singer in self.queue[2:]]
-                        display_text = " " * (self.ticker_window.winfo_width() // 10) + current_text + "    " + "    ".join(following_singers) + "    "
+                        display_text = " " * (self.ticker_window.winfo_width() // 10)
+                        for i, singer in enumerate(self.queue):
+                            display_text += f"{i+1}. {singer}    "
                     
                     while len(display_text) > 0:
                         self.ticker_label.config(text=display_text)
