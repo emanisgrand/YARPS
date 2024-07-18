@@ -1,4 +1,6 @@
 import tkinter as tk
+import os
+import sys
 from tkinter import ttk, messagebox
 import threading
 import time
@@ -97,6 +99,16 @@ class TextTickerApp:
         self.ticker_window = TickerWindow(root)
         self.root.bind("<Button-1>", self.deselect_singer)
 
+
+    def get_data_file_path(self):
+        if getattr(sys, 'frozen', False):
+            # Running as compiled executable
+            application_path = sys._MEIPASS
+        else:
+            # Running as script
+            application_path = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(application_path, 'singer_cache.json')
+        
     def add_to_queue(self, event=None):
         entry_text = self.singer_entry.get()
         if entry_text:
@@ -271,7 +283,7 @@ class TextTickerApp:
 
     def load_singer_cache(self):
         try:
-            with open('singer_cache.json', 'r') as f:
+            with open(self.get_data_file_path(), 'r') as f:
                 data = json.load(f)
                 for name, info in data.items():
                     singer = Singer(name, info['current_song'], info['entry_number'])
@@ -280,7 +292,7 @@ class TextTickerApp:
                     singer.is_new = info['is_new']
                     self.singer_cache[name] = singer
         except FileNotFoundError:
-            pass
+            pass  # It's okay if the file doesn't exist yet
 
     def save_singer_cache(self):
         data = {name: {'songs': singer.songs, 
@@ -289,7 +301,7 @@ class TextTickerApp:
                        'performance_count': singer.performance_count,
                        'is_new': singer.is_new} 
                 for name, singer in self.singer_cache.items()}
-        with open('singer_cache.json', 'w') as f:
+        with open(self.get_data_file_path(), 'w') as f:
             json.dump(data, f)
 
     def on_close(self):
