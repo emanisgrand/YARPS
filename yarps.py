@@ -11,7 +11,11 @@ class TextTickerApp:
         self.root = root
         self.root.title("YARPS - You Always Remove the Previous Singer")
 
-        # Entry number counter
+        # Singer data
+        self.queue = []
+        self.singer_cache = {}
+        self.selected_singer = None
+        self.running = True
         self.entry_counter = 1
 
         # Frame for input
@@ -76,8 +80,6 @@ class TextTickerApp:
         self.clear_counts_button = ttk.Button(root, text="Clear Performance Counts", command=self.clear_performance_counts)
         self.clear_counts_button.pack(side="bottom", pady=10)
 
-        self.queue = []
-        self.singer_cache = {}
         self.load_singer_cache()
 
         # Frame for ticker state control
@@ -91,11 +93,6 @@ class TextTickerApp:
         self.state_combobox.grid(row=0, column=1, padx=5)
         self.state_combobox.bind("<<ComboboxSelected>>", self.change_ticker_state)
 
-        self.queue = []
-        self.singer_cache = {}
-        self.selected_singer = None
-        self.running = True
-
         # Launch Ticker Window
         self.ticker_window = TickerWindow(root)
         self.root.bind("<Button-1>", self.deselect_singer)
@@ -103,29 +100,35 @@ class TextTickerApp:
     def add_to_queue(self, event=None):
         entry_text = self.singer_entry.get()
         if entry_text:
-            name, song = entry_text.split("-", 1)
-            name = name.strip().title()
-            song = song.strip()
+            try:
+                name, song = entry_text.split("-", 1)
+                name = name.strip().title()
+                song = song.strip()
 
-            if name in self.singer_cache:
-                singer = self.singer_cache[name]
-                singer.add_song(song)
-                singer.set_current_song(song)
-            else:
-                singer = Singer(name, song, self.entry_counter)
-                self.singer_cache[name] = singer
-                self.entry_counter += 1
+                if name in self.singer_cache:
+                    singer = self.singer_cache[name]
+                    singer.add_song(song)
+                    singer.set_current_song(song)
+                else:
+                    singer = Singer(name, song, self.entry_counter)
+                    self.singer_cache[name] = singer
+                    self.entry_counter += 1
 
-            self.queue.append(singer)
-            self.update_listbox()
-            self.singer_entry.delete(0, tk.END)
-            self.ticker_window.update_queue(self.queue)
+                self.queue.append(singer)
+                self.update_listbox()
+                self.singer_entry.delete(0, tk.END)
+                self.ticker_window.update_queue(self.queue)
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter the singer and song in the format: 'Singer - Song'")
 
     def remove_from_queue(self):
         if self.queue:
             removed_singer = self.queue.pop(0)
             removed_singer.increment_performance_count()
             self.singer_cache[removed_singer.name] = removed_singer
+            if self.selected_singer == removed_singer:
+                self.selected_singer = None
+                self.update_selected_singer_display()
             self.save_singer_cache()
             self.update_listbox()
             self.ticker_window.update_queue(self.queue)
@@ -157,9 +160,7 @@ class TextTickerApp:
         selected_index = self.queue_listbox.curselection()
         if selected_index:
             self.selected_singer = self.queue[selected_index[0]]
-            self.selected_singer_label.config(text=f"Selected Singer: {self.selected_singer.name}")
-            self.song_dropdown['values'] = self.selected_singer.songs
-            self.song_dropdown.set(self.selected_singer.current_song)
+            self.update_selected_singer_display()
             print(f"Singer selected: {self.selected_singer.name}, Current song: {self.selected_singer.current_song}")
         else:
             print("No singer selected in display_singer_info")
@@ -218,6 +219,10 @@ class TextTickerApp:
                 to_index = len(self.queue)
             self.queue.insert(to_index, singer)
             self.update_listbox()
+            if self.selected_singer == singer:
+                self.queue_listbox.selection_clear(0, tk.END)
+                self.queue_listbox.selection_set(to_index)
+                self.queue_listbox.see(to_index)
 
     def move_to_next_in_queue(self):
         selected_index = self.queue_listbox.curselection()
@@ -240,10 +245,18 @@ class TextTickerApp:
                 self.new_song_entry.winfo_containing(event.x_root, event.y_root) or
                 self.add_song_button.winfo_containing(event.x_root, event.y_root)):
             self.selected_singer = None
+            self.update_selected_singer_display()
+            print("Singer deselected")
+
+    def update_selected_singer_display(self):
+        if self.selected_singer:
+            self.selected_singer_label.config(text=f"Selected Singer: {self.selected_singer.name}")
+            self.song_dropdown['values'] = self.selected_singer.songs
+            self.song_dropdown.set(self.selected_singer.current_song)
+        else:
             self.selected_singer_label.config(text="Selected Singer: None")
             self.song_dropdown.set('')
             self.song_dropdown['values'] = []
-            print("Singer deselected")
 
     def update_listbox(self):
         self.queue_listbox.delete(0, tk.END)
