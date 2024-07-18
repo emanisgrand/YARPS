@@ -14,14 +14,13 @@ class Singer:
         return f"{self.name} - {self.current_song}"
 
     def add_song(self, song):
-        if song not in self.songs:
+        if song and song not in self.songs:
             self.songs.append(song)
 
     def set_current_song(self, song):
-        if song in self.songs:
-            self.current_song = song
-        elif song:  # If the song is not in the list but is not empty, add it
-            self.add_song(song)
+        if song:
+            if song not in self.songs:
+                self.add_song(song)
             self.current_song = song
 
     def increment_performance_count(self):
@@ -29,7 +28,4 @@ class Singer:
         self.is_new = False
 
     def get_display_style(self):
-        if self.is_new:
-            return {"foreground": "green"}
-        else:
-            return {"foreground": "black"}
+        return {"foreground": "green" if self.is_new else "black"}

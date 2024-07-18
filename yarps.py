@@ -32,7 +32,7 @@ class TextTickerApp:
         self.queue_frame = ttk.Frame(root)
         self.queue_frame.pack(pady=10)
 
-        self.queue_listbox = tk.Listbox(self.queue_frame, width=50)
+        self.queue_listbox = tk.Listbox(self.queue_frame, width=70, font=("Courier", 10))
         self.queue_listbox.pack(side="left", fill="y")
         self.queue_listbox.bind("<<ListboxSelect>>", self.display_singer_info)
         self.queue_listbox.bind("<Button-1>", self.on_drag_start)
@@ -54,7 +54,7 @@ class TextTickerApp:
 
         self.song_dropdown = ttk.Combobox(self.info_frame, state="readonly")
         self.song_dropdown.pack()
-        self.song_dropdown.bind("<<ComboboxSelected>>", self.update_current_song)
+        self.song_dropdown.bind("<<ComboboxSelected>>", self.on_song_selected)
 
         self.new_song_entry = ttk.Entry(self.info_frame)
         self.new_song_entry.pack()
@@ -93,10 +93,12 @@ class TextTickerApp:
 
         self.queue = []
         self.singer_cache = {}
+        self.selected_singer = None
         self.running = True
 
         # Launch Ticker Window
         self.ticker_window = TickerWindow(root)
+        self.root.bind("<Button-1>", self.deselect_singer)
 
     def add_to_queue(self, event=None):
         entry_text = self.singer_entry.get()
@@ -127,6 +129,8 @@ class TextTickerApp:
             self.save_singer_cache()
             self.update_listbox()
             self.ticker_window.update_queue(self.queue)
+        else:
+            messagebox.showinfo("Queue Empty", "There are no singers in the queue to remove.")
 
     def clear_performance_counts(self):
         if messagebox.askyesno("Clear Performance Counts", "Are you sure you want to clear all performance counts?"):
@@ -152,21 +156,13 @@ class TextTickerApp:
     def display_singer_info(self, event):
         selected_index = self.queue_listbox.curselection()
         if selected_index:
-            selected_singer = self.queue[selected_index[0]]
-            self.selected_singer_label.config(text=f"Selected Singer: {selected_singer.name}")
-            self.song_dropdown['values'] = selected_singer.songs
-            self.song_dropdown.set(selected_singer.current_song)
-
-    def update_current_song(self, event):
-        selected_index = self.queue_listbox.curselection()
-        if selected_index:
-            selected_singer = self.queue[selected_index[0]]
-            new_song = self.song_dropdown.get()
-            if new_song:
-                selected_singer.set_current_song(new_song)
-                self.update_listbox()
-                self.ticker_window.update_queue(self.queue)
-                self.save_singer_cache()  # Save the updated information
+            self.selected_singer = self.queue[selected_index[0]]
+            self.selected_singer_label.config(text=f"Selected Singer: {self.selected_singer.name}")
+            self.song_dropdown['values'] = self.selected_singer.songs
+            self.song_dropdown.set(self.selected_singer.current_song)
+            print(f"Singer selected: {self.selected_singer.name}, Current song: {self.selected_singer.current_song}")
+        else:
+            print("No singer selected in display_singer_info")
 
     def add_song_to_singer(self):
         selected_index = self.queue_listbox.curselection()
@@ -176,7 +172,27 @@ class TextTickerApp:
             if new_song:
                 selected_singer.add_song(new_song)
                 self.song_dropdown['values'] = selected_singer.songs
+                self.song_dropdown.set(new_song)
+                selected_singer.set_current_song(new_song)
                 self.new_song_entry.delete(0, tk.END)
+                self.update_listbox()
+                self.ticker_window.update_queue(self.queue)
+                self.save_singer_cache()
+
+    def on_song_selected(self, event):
+        if self.selected_singer:
+            new_song = self.song_dropdown.get()
+            if new_song:
+                self.selected_singer.set_current_song(new_song)
+                self.update_listbox()
+                self.ticker_window.update_queue(self.queue)
+                self.save_singer_cache()
+                print(f"Song selected for {self.selected_singer.name}: {new_song}")
+            else:
+                print("No song selected")
+        else:
+            print("No singer selected")
+        print("on_song_selected called")
 
     def change_ticker_state(self, event):
         selected_state = self.state_combobox.get()
@@ -196,8 +212,12 @@ class TextTickerApp:
             self.update_listbox()
 
     def move_singer(self, from_index, to_index):
-        singer = self.queue.pop(from_index)
-        self.queue.insert(to_index, singer)
+        if self.queue and 0 <= from_index < len(self.queue):
+            singer = self.queue.pop(from_index)
+            if to_index > len(self.queue):
+                to_index = len(self.queue)
+            self.queue.insert(to_index, singer)
+            self.update_listbox()
 
     def move_to_next_in_queue(self):
         selected_index = self.queue_listbox.curselection()
@@ -213,13 +233,28 @@ class TextTickerApp:
             self.move_singer(index, len(self.queue) - 1)
             self.update_listbox()
 
+    def deselect_singer(self, event):
+        # Check if the click is outside of interactable elements
+        if not (self.queue_listbox.winfo_containing(event.x_root, event.y_root) or 
+                self.song_dropdown.winfo_containing(event.x_root, event.y_root) or
+                self.new_song_entry.winfo_containing(event.x_root, event.y_root) or
+                self.add_song_button.winfo_containing(event.x_root, event.y_root)):
+            self.selected_singer = None
+            self.selected_singer_label.config(text="Selected Singer: None")
+            self.song_dropdown.set('')
+            self.song_dropdown['values'] = []
+            print("Singer deselected")
+
     def update_listbox(self):
         self.queue_listbox.delete(0, tk.END)
         for i, singer in enumerate(self.queue, 1):
-            display_text = f"{i}. {singer.name} - {singer.current_song} (Performances: {singer.performance_count})"
+            prefix = "* " if singer.is_new else ""
+            display_text = f"{prefix}{i:<3} {singer.name:<20} {singer.current_song:<30} {singer.performance_count:>3}"
             self.queue_listbox.insert(tk.END, display_text)
-            self.queue_listbox.itemconfigure(tk.END, **singer.get_display_style())
+            self.queue_listbox.itemconfig(tk.END, **singer.get_display_style())
+            print(f"Updated listbox: {singer.name}, Current song: {singer.current_song}")
         self.ticker_window.update_queue(self.queue)
+        print("Listbox update completed")
 
     def load_singer_cache(self):
         try:
