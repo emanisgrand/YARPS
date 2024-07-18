@@ -27,12 +27,12 @@ class TickerWindow:
             while self.running:
                 if self.queue:
                     if self.state == "current_singer_only":
-                        current_text = str(self.queue[0])
+                        current_text = self.queue[0].ticker_str()  # Use ticker_str here
                         display_text = " " * (self.ticker_window.winfo_width() // 10) + current_text + "    "
                     elif self.state == "full_queue_display":
                         display_text = " " * (self.ticker_window.winfo_width() // 10)
                         for i, singer in enumerate(self.queue):
-                            display_text += f"{i+1}. {singer}    "
+                            display_text += f"{i+1}. {singer.ticker_str()}    "  # Use ticker_str here
                     
                     while len(display_text) > 0:
                         self.ticker_label.config(text=display_text)
