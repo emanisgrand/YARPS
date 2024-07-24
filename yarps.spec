@@ -5,7 +5,7 @@ a = Analysis(
     ['yarps.py'],
     pathex=[],
     binaries=[],
-    datas=[('singer.py', '.'), ('ticker_window.py', '.')],
+    datas=[('singer.py', '.'), ('ticker_window.py', '.'), ('singer_cache.json', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

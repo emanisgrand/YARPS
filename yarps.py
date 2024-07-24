@@ -5,6 +5,7 @@ from tkinter import ttk, messagebox
 import threading
 import time
 import json
+import shutil
 from singer import Singer  # Import the Singer class from singer.py
 from ticker_window import TickerWindow  # Import the TickerWindow class from ticker_window.py
 
@@ -91,7 +92,7 @@ class TextTickerApp:
         self.state_label = ttk.Label(self.ticker_state_frame, text="Ticker State:")
         self.state_label.grid(row=0, column=0, padx=5)
 
-        self.state_combobox = ttk.Combobox(self.ticker_state_frame, values=["current_singer_only", "full_queue_display"])
+        self.state_combobox = ttk.Combobox(self.ticker_state_frame, values=["auto", "current_singer_only", "full_queue_display"])
         self.state_combobox.grid(row=0, column=1, padx=5)
         self.state_combobox.bind("<<ComboboxSelected>>", self.change_ticker_state)
 
@@ -99,15 +100,30 @@ class TextTickerApp:
         self.ticker_window = TickerWindow(root)
         self.root.bind("<Button-1>", self.deselect_singer)
 
+    def change_ticker_state(self, event):
+        selected_state = self.state_combobox.get()
+        self.ticker_window.set_state(selected_state)
 
     def get_data_file_path(self):
         if getattr(sys, 'frozen', False):
             # Running as compiled executable
-            application_path = sys._MEIPASS
+            bundle_dir = sys._MEIPASS
         else:
             # Running as script
-            application_path = os.path.dirname(os.path.abspath(__file__))
-        return os.path.join(application_path, 'singer_cache.json')
+            bundle_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Use a writable user data directory
+        user_data_dir = os.path.join(os.path.expanduser('~'), '.yarps')
+        os.makedirs(user_data_dir, exist_ok=True)
+        
+        user_file_path = os.path.join(user_data_dir, 'singer_cache.json')
+        bundle_file_path = os.path.join(bundle_dir, 'singer_cache.json')
+        
+        if not os.path.exists(user_file_path) and os.path.exists(bundle_file_path):
+            # Copy the bundled file to the user data directory if it doesn't exist
+            shutil.copy2(bundle_file_path, user_file_path)
+    
+        return user_file_path
         
     def add_to_queue(self, event=None):
         entry_text = self.singer_entry.get()
