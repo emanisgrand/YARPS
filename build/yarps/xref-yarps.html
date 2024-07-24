@@ -166,11 +166,11 @@ imports:
  &#8226;   <a href="#encodings.uu_codec">encodings.uu_codec</a>
  &#8226;   <a href="#encodings.zlib_codec">encodings.zlib_codec</a>
  &#8226;   <a href="#enum">enum</a>
+ &#8226;   <a href="#file_handler">file_handler</a>
  &#8226;   <a href="#functools">functools</a>
  &#8226;   <a href="#genericpath">genericpath</a>
  &#8226;   <a href="#heapq">heapq</a>
  &#8226;   <a href="#io">io</a>
- &#8226;   <a href="#json">json</a>
  &#8226;   <a href="#keyword">keyword</a>
  &#8226;   <a href="#linecache">linecache</a>
  &#8226;   <a href="#locale">locale</a>
@@ -179,23 +179,18 @@ imports:
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#posixpath">posixpath</a>
  &#8226;   <a href="#pyi_rth__tkinter.py">pyi_rth__tkinter.py</a>
+ &#8226;   <a href="#queue_manager">queue_manager</a>
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#reprlib">reprlib</a>
- &#8226;   <a href="#shutil">shutil</a>
- &#8226;   <a href="#singer">singer</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
  &#8226;   <a href="#sre_parse">sre_parse</a>
  &#8226;   <a href="#stat">stat</a>
- &#8226;   <a href="#sys">sys</a>
- &#8226;   <a href="#threading">threading</a>
- &#8226;   <a href="#ticker_window">ticker_window</a>
- &#8226;   <a href="#time">time</a>
+ &#8226;   <a href="#ticker_manager">ticker_manager</a>
  &#8226;   <a href="#tkinter">tkinter</a>
- &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
- &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
  &#8226;   <a href="#traceback">traceback</a>
  &#8226;   <a href="#types">types</a>
+ &#8226;   <a href="#ui_components">ui_components</a>
  &#8226;   <a href="#warnings">warnings</a>
  &#8226;   <a href="#weakref">weakref</a>
 
@@ -208,7 +203,7 @@ imports:
   <a target="code" href="" type="text/plain"><tt>'org.python'</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
-    <a href="#pickle">pickle</a>
+    <a href="#copy">copy</a>
 
   </div>
 
@@ -1455,8 +1450,8 @@ imported by:
   <a target="code" href="///C:/Users/tio/AppData/Local/Programs/Python/Python39/lib/copy.py" type="text/plain"><tt>copy</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#copyreg">copyreg</a>
- &#8226;   <a href="#org">org</a>
+    <a href="#'org.python'">'org.python'</a>
+ &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#types">types</a>
  &#8226;   <a href="#weakref">weakref</a>
 
@@ -4556,6 +4551,25 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="file_handler"></a>
+  <a target="code" href="///C:/Users/tio/Desktop/YARPS/file_handler.py" type="text/plain"><tt>file_handler</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#json">json</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#shutil">shutil</a>
+ &#8226;   <a href="#sys">sys</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#yarps.py">yarps.py</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="fnmatch"></a>
   <a target="code" href="///C:/Users/tio/AppData/Local/Programs/Python/Python39/lib/fnmatch.py" type="text/plain"><tt>fnmatch</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -5065,10 +5079,10 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#json.decoder">json.decoder</a>
+    <a href="#file_handler">file_handler</a>
+ &#8226;   <a href="#json.decoder">json.decoder</a>
  &#8226;   <a href="#json.encoder">json.encoder</a>
  &#8226;   <a href="#json.scanner">json.scanner</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
 
   </div>
 
@@ -5405,7 +5419,7 @@ imported by:
   <a target="code" href="" type="text/plain"><tt>org</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
 imported by:
-    <a href="#copy">copy</a>
+    <a href="#pickle">pickle</a>
 
   </div>
 
@@ -5436,6 +5450,7 @@ imported by:
  &#8226;   <a href="#bz2">bz2</a>
  &#8226;   <a href="#configparser">configparser</a>
  &#8226;   <a href="#email.utils">email.utils</a>
+ &#8226;   <a href="#file_handler">file_handler</a>
  &#8226;   <a href="#fnmatch">fnmatch</a>
  &#8226;   <a href="#genericpath">genericpath</a>
  &#8226;   <a href="#getopt">getopt</a>
@@ -5516,14 +5531,14 @@ imported by:
   <a target="code" href="///C:/Users/tio/AppData/Local/Programs/Python/Python39/lib/pickle.py" type="text/plain"><tt>pickle</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#'org.python'">'org.python'</a>
- &#8226;   <a href="#_compat_pickle">_compat_pickle</a>
+    <a href="#_compat_pickle">_compat_pickle</a>
  &#8226;   <a href="#_pickle">_pickle</a>
  &#8226;   <a href="#codecs">codecs</a>
  &#8226;   <a href="#copyreg">copyreg</a>
  &#8226;   <a href="#functools">functools</a>
  &#8226;   <a href="#io">io</a>
  &#8226;   <a href="#itertools">itertools</a>
+ &#8226;   <a href="#org">org</a>
  &#8226;   <a href="#pprint">pprint</a>
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#struct">struct</a>
@@ -5638,6 +5653,22 @@ imports:
   <div class="import">
 imported by:
     <a href="#zipfile">zipfile</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="queue_manager"></a>
+  <a target="code" href="///C:/Users/tio/Desktop/YARPS/queue_manager.py" type="text/plain"><tt>queue_manager</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#singer">singer</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#yarps.py">yarps.py</a>
 
   </div>
 
@@ -5841,8 +5872,8 @@ imports:
   <div class="import">
 imported by:
     <a href="#argparse">argparse</a>
+ &#8226;   <a href="#file_handler">file_handler</a>
  &#8226;   <a href="#tarfile">tarfile</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
  &#8226;   <a href="#zipfile">zipfile</a>
 
   </div>
@@ -5872,7 +5903,7 @@ imported by:
   <a target="code" href="///C:/Users/tio/Desktop/YARPS/singer.py" type="text/plain"><tt>singer</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imported by:
-    <a href="#yarps.py">yarps.py</a>
+    <a href="#queue_manager">queue_manager</a>
 
   </div>
 
@@ -6125,6 +6156,7 @@ imported by:
  &#8226;   <a href="#encodings.utf_16">encodings.utf_16</a>
  &#8226;   <a href="#encodings.utf_32">encodings.utf_32</a>
  &#8226;   <a href="#enum">enum</a>
+ &#8226;   <a href="#file_handler">file_handler</a>
  &#8226;   <a href="#fractions">fractions</a>
  &#8226;   <a href="#getopt">getopt</a>
  &#8226;   <a href="#gettext">gettext</a>
@@ -6162,7 +6194,6 @@ imported by:
  &#8226;   <a href="#uu">uu</a>
  &#8226;   <a href="#warnings">warnings</a>
  &#8226;   <a href="#weakref">weakref</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
  &#8226;   <a href="#zipfile">zipfile</a>
 
   </div>
@@ -6243,8 +6274,23 @@ imported by:
  &#8226;   <a href="#logging">logging</a>
  &#8226;   <a href="#subprocess">subprocess</a>
  &#8226;   <a href="#ticker_window">ticker_window</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
  &#8226;   <a href="#zipfile">zipfile</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="ticker_manager"></a>
+  <a target="code" href="///C:/Users/tio/Desktop/YARPS/ticker_manager.py" type="text/plain"><tt>ticker_manager</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#ticker_window">ticker_window</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#yarps.py">yarps.py</a>
 
   </div>
 
@@ -6262,7 +6308,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#yarps.py">yarps.py</a>
+    <a href="#ticker_manager">ticker_manager</a>
 
   </div>
 
@@ -6292,7 +6338,6 @@ imported by:
  &#8226;   <a href="#tarfile">tarfile</a>
  &#8226;   <a href="#threading">threading</a>
  &#8226;   <a href="#ticker_window">ticker_window</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
  &#8226;   <a href="#zipfile">zipfile</a>
 
   </div>
@@ -6323,6 +6368,7 @@ imported by:
  &#8226;   <a href="#tkinter.constants">tkinter.constants</a>
  &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
  &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
+ &#8226;   <a href="#ui_components">ui_components</a>
  &#8226;   <a href="#yarps.py">yarps.py</a>
 
   </div>
@@ -6373,7 +6419,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#tkinter">tkinter</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
+ &#8226;   <a href="#ui_components">ui_components</a>
 
   </div>
 
@@ -6391,7 +6437,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#tkinter">tkinter</a>
- &#8226;   <a href="#yarps.py">yarps.py</a>
+ &#8226;   <a href="#ui_components">ui_components</a>
 
   </div>
 
@@ -6531,6 +6577,24 @@ imports:
 imported by:
     <a href="#functools">functools</a>
  &#8226;   <a href="#importlib.abc">importlib.abc</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="ui_components"></a>
+  <a target="code" href="///C:/Users/tio/Desktop/YARPS/ui_components.py" type="text/plain"><tt>ui_components</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
+ &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#yarps.py">yarps.py</a>
 
   </div>
 
