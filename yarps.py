@@ -318,7 +318,7 @@ class TextTickerApp:
                        'is_new': singer.is_new} 
                 for name, singer in self.singer_cache.items()}
         with open(self.get_data_file_path(), 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4, sort_keys=True)
 
     def on_close(self):
         self.save_singer_cache()
