@@ -54,7 +54,7 @@ class QueueFrame(ttk.Frame):
         else:
             self.selected_singer = None
             self.app.update_info_frame(None)
-    
+
     def update_listbox(self):
         self.queue_listbox.delete(0, tk.END)
         for i, singer in enumerate(self.queue_manager.queue, 1):
@@ -62,10 +62,12 @@ class QueueFrame(ttk.Frame):
             display_text = f"{prefix}{i:<3} {singer.name:<20} {singer.current_song:<30} {singer.performance_count:>3}"
             self.queue_listbox.insert(tk.END, display_text)
             self.queue_listbox.itemconfig(tk.END, **singer.get_display_style())
-    
+
     def on_drag_start(self, event):
-        self.drag_data['index'] = self.queue_listbox.nearest(event.y)
-        self.drag_data['y'] = event.y
+        index = self.queue_listbox.nearest(event.y)
+        if 0 <= index < len(self.queue_manager.queue):
+            self.drag_data['index'] = index
+            self.drag_data['y'] = event.y
 
     def on_drag_motion(self, event):
         if self.drag_data['index'] is not None:
@@ -73,19 +75,31 @@ class QueueFrame(ttk.Frame):
             if abs(y - self.drag_data['y']) > 5:  # Moved more than 5 pixels
                 drag_index = self.drag_data['index']
                 drop_index = self.queue_listbox.nearest(y)
-                if drag_index != drop_index:
-                    self.queue_listbox.delete(drag_index)
-                    self.queue_listbox.insert(drop_index, self.queue_manager.queue[drag_index].ticker_str())
+                if 0 <= drop_index < len(self.queue_manager.queue) and drag_index != drop_index:
+                    # Create a temporary copy of the queue for preview
+                    temp_queue = self.queue_manager.queue.copy()
+                    singer = temp_queue.pop(drag_index)
+                    temp_queue.insert(drop_index, singer)
+
+                    # Update the listbox with the temporary queue
+                    self.queue_listbox.delete(0, tk.END)
+                    for i, s in enumerate(temp_queue, 1):
+                        prefix = "* " if s.is_new else ""
+                        display_text = f"{prefix}{i:<3} {s.name:<20} {s.current_song:<30} {s.performance_count:>3}"
+                        self.queue_listbox.insert(tk.END, display_text)
+                        style = s.get_display_style()
+                        if i - 1 == drop_index:
+                            style["background"] = "lightblue"  # Highlight the dragged item
+                        self.queue_listbox.itemconfig(tk.END, **style)
+
                     self.queue_listbox.selection_clear(0, tk.END)
                     self.queue_listbox.selection_set(drop_index)
                     self.queue_listbox.see(drop_index)
-                    self.drag_data['index'] = drop_index
-                    self.drag_data['y'] = y
 
     def on_drag_stop(self, event):
         if self.drag_data['index'] is not None:
             drop_index = self.queue_listbox.nearest(event.y)
-            if self.drag_data['index'] != drop_index:
+            if 0 <= drop_index < len(self.queue_manager.queue) and self.drag_data['index'] != drop_index:
                 self.queue_manager.move_singer(self.drag_data['index'], drop_index)
                 self.update_listbox()
         self.drag_data['index'] = None
