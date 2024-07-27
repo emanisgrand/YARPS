@@ -15,7 +15,6 @@ class QueueManager:
         if name in self.singer_cache:
             singer = self.singer_cache[name]
             singer.add_song(song)
-            singer.set_current_song(song)
         else:
             singer = Singer(name, song, self.entry_counter)
             self.singer_cache[name] = singer
@@ -49,18 +48,17 @@ class QueueManager:
 
     def load_singer_cache(self):
         data = self.file_handler.load_singer_cache()
+        self.entry_counter = 1
         for name, info in data.items():
-            singer = Singer(name, info['current_song'], info['entry_number'])
+            singer = Singer(name, info['songs'][0], self.entry_counter)
             singer.songs = info['songs']
-            singer.performance_count = info['performance_count']
-            singer.is_new = info['is_new']
             self.singer_cache[name] = singer
+            self.entry_counter += 1
 
     def save_singer_cache(self):
-        data = {name: {'songs': singer.songs, 
-                       'current_song': singer.current_song, 
-                       'entry_number': singer.entry_number,
-                       'performance_count': singer.performance_count,
-                       'is_new': singer.is_new} 
-                for name, singer in self.singer_cache.items()}
-        self.file_handler.save_singer_cache(data)
+        data = {name: {'songs': singer.songs} for name, singer in self.singer_cache.items()}
+        try:
+            self.file_handler.save_singer_cache(data)
+            print(f"Singer cache saved successfully. Path: {self.file_handler.data_file_path}")
+        except Exception as e:
+            print(f"Error saving singer cache: {str(e)}")

@@ -175,13 +175,20 @@ class InfoFrame(ttk.Frame):
         if self.selected_singer:
             new_song = self.new_song_entry.get()
             if new_song:
-                self.selected_singer.add_song(new_song)
-                self.song_dropdown['values'] = self.selected_singer.songs
-                self.song_dropdown.set(new_song)
-                self.selected_singer.set_current_song(new_song)
-                self.new_song_entry.delete(0, tk.END)
-                self.app.update_queue_frame()
-                self.queue_manager.save_singer_cache()
+                if self.selected_singer.add_song(new_song):
+                    self.song_dropdown['values'] = self.selected_singer.songs
+                    self.song_dropdown.set(new_song)
+                    self.selected_singer.set_current_song(new_song)
+                    self.new_song_entry.delete(0, tk.END)
+                    self.app.update_queue_frame()
+                    self.queue_manager.save_singer_cache()  # Save cache after adding a song
+                    print(f"New song '{new_song}' added to {self.selected_singer.name}'s list and cache saved.")
+                else:
+                    print(f"Song '{new_song}' already exists in {self.selected_singer.name}'s list.")
+            else:
+                print("No new song entered.")
+        else:
+            print("No singer selected.")
         self.update_ticker()
 
     def remove_from_queue(self):

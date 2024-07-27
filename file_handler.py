@@ -29,12 +29,24 @@ class FileHandler:
         return user_file_path
 
     def load_singer_cache(self):
-        try:
-            with open(self.data_file_path, 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}  # Return an empty dict if the file doesn't exist yet
+            print(f"Loading singer cache from: {self.data_file_path}")
+            try:
+                with open(self.data_file_path, 'r') as f:
+                    data = json.load(f)
+                print("Singer cache loaded successfully.")
+                return data
+            except FileNotFoundError:
+                print("Singer cache file not found. Creating a new one.")
+                return {}
+            except json.JSONDecodeError:
+                print("Error decoding singer cache file. Starting with an empty cache.")
+                return {}
 
     def save_singer_cache(self, data):
-        with open(self.data_file_path, 'w') as f:
-            json.dump(data, f, indent=4, sort_keys=True)
+        print(f"Saving singer cache to: {self.data_file_path}")
+        try:
+            with open(self.data_file_path, 'w') as f:
+                json.dump(data, f, indent=4, sort_keys=True)
+            print("Singer cache saved successfully.")
+        except Exception as e:
+            print(f"Error saving singer cache: {str(e)}")
