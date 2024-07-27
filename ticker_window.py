@@ -7,6 +7,9 @@ class TickerWindow:
         self.parent = parent
         self.ticker_window = tk.Toplevel(parent)
         self.ticker_window.title("The Kings of Karaoke")
+        
+        # Set window to always be on top
+        self.ticker_window.attributes('-topmost', True)
 
         self.ticker_label = tk.Label(self.ticker_window, text="", font=("Helvetica", 16))
         self.ticker_label.pack(side="left", padx=5)
@@ -16,6 +19,22 @@ class TickerWindow:
         self.state = "current_singer_only"  # Initial state
         self.auto_state = False
         self.last_state_change = time.time()
+        
+        # Initialize borderless mode flag
+        self.borderless = False
+
+        # Create right-click menu
+        self.menu = tk.Menu(self.ticker_window, tearoff=0)
+        self.menu.add_command(label="Toggle Borderless", command=self.toggle_borderless)
+
+        # Bind right-click event to show menu
+        self.ticker_window.bind("<Button-3>", self.show_menu)
+
+        # Bind left-click and drag events for moving the window
+        self.ticker_window.bind("<ButtonPress-1>", self.start_move)
+        self.ticker_window.bind("<ButtonRelease-1>", self.stop_move)
+        self.ticker_window.bind("<B1-Motion>", self.do_move)
+
         self.start_ticker()
 
     def update_queue(self, queue):
@@ -46,14 +65,43 @@ class TickerWindow:
                     while len(display_text) > 0 and self.running:
                         self.ticker_label.config(text=display_text)
                         display_text = display_text[1:]  # Remove the first character to scroll to the left
-                        time.sleep(0.1)
+                        time.sleep(0.05)
                         self.ticker_window.update_idletasks()
                     display_text += " " * (self.ticker_window.winfo_width() // 10)  # Ensure text loops back to the right
                 else:
+                    self.ticker_label.config(text="Waiting for queue...")
                     time.sleep(1)
 
         ticker_thread = threading.Thread(target=run_ticker, daemon=True)
         ticker_thread.start()
+
+    def show_menu(self, event):
+        try:
+            self.menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.menu.grab_release()
+
+    def toggle_borderless(self):
+        self.borderless = not self.borderless
+        if self.borderless:
+            self.ticker_window.overrideredirect(True)
+        else:
+            self.ticker_window.overrideredirect(False)
+
+    def start_move(self, event):
+        self.x = event.x
+        self.y = event.y
+
+    def stop_move(self, event):
+        self.x = None
+        self.y = None
+
+    def do_move(self, event):
+        deltax = event.x - self.x
+        deltay = event.y - self.y
+        x = self.ticker_window.winfo_x() + deltax
+        y = self.ticker_window.winfo_y() + deltay
+        self.ticker_window.geometry(f"+{x}+{y}")
 
     def on_close(self):
         self.running = False
