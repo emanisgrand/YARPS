@@ -4,7 +4,7 @@ First off, thank you for considering contributing to YARPS! It's people like you
 
 ## Code of Conduct
 
-By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please report unacceptable behavior to [project_email@example.com](mailto:project_email@example.com).
+By participating in this project, you are expected to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Please report unacceptable behavior to [me@em4nuel.com](mailto:project_me@em4nuel.com).
 
 ## How Can I Contribute?
 
