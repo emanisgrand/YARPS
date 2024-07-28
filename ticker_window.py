@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import threading
 import time
 
@@ -8,11 +9,19 @@ class TickerWindow:
         self.ticker_window = tk.Toplevel(parent)
         self.ticker_window.title("The Kings of Karaoke")
         
-        # Set window to always be on top
-        self.ticker_window.attributes('-topmost', True)
+        # Set window to always be on top and make it slightly transparent
+        self.ticker_window.attributes('-topmost', True, '-alpha', 0.9)
 
-        self.ticker_label = tk.Label(self.ticker_window, text="", font=("Helvetica", 16))
-        self.ticker_label.pack(side="left", padx=5)
+        # Create a style
+        self.style = ttk.Style()
+        self.style.configure('Ticker.TLabel', font=("Helvetica", 16), background='#2C3E50', foreground='#ECF0F1')
+
+        # Create a frame to hold our content
+        self.frame = ttk.Frame(self.ticker_window, style='Ticker.TFrame', padding=5)
+        self.frame.pack(fill=tk.BOTH, expand=True)
+
+        self.ticker_label = ttk.Label(self.frame, text="", style='Ticker.TLabel', font=("Helvetica", 32))
+        self.ticker_label.pack(side="left", padx=5, fill=tk.BOTH, expand=True)
 
         self.running = True
         self.queue = []
@@ -55,12 +64,12 @@ class TickerWindow:
 
                 if self.queue:
                     if self.state == "current_singer_only" or (self.auto_state and self.state != "full_queue_display"):
-                        current_text = f"{self.queue[0].name} - {self.queue[0].current_song}"
+                        current_text = f"🎤 Now Singing: {self.queue[0].name} - {self.queue[0].current_song}"
                         display_text = " " * (self.ticker_window.winfo_width() // 10) + current_text + "    "
                     elif self.state == "full_queue_display" or (self.auto_state and self.state != "current_singer_only"):
-                        display_text = " " * (self.ticker_window.winfo_width() // 10)
-                        for i, singer in enumerate(self.queue):
-                            display_text += f"{i+1}. {singer.name}    "
+                        display_text = " " * (self.ticker_window.winfo_width() // 10) + "🎶 Up Next: "
+                        for i, singer in enumerate(self.queue[:5], 1):
+                            display_text += f"{i}. {singer.name}    "
                     
                     while len(display_text) > 0 and self.running:
                         self.ticker_label.config(text=display_text)
@@ -69,7 +78,7 @@ class TickerWindow:
                         self.ticker_window.update_idletasks()
                     display_text += " " * (self.ticker_window.winfo_width() // 10)  # Ensure text loops back to the right
                 else:
-                    self.ticker_label.config(text="Waiting for queue...")
+                    self.ticker_label.config(text="🎵 Waiting for the next star... 🎵")
                     time.sleep(1)
 
         ticker_thread = threading.Thread(target=run_ticker, daemon=True)
