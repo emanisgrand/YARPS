@@ -2,7 +2,8 @@
 
 YARPS (You Always Remove the Previous Singer) is a sophisticated Karaoke queue management system designed to streamline the singer rotation process and enhance the overall karaoke experience.
 
-![YARPS Interface](https://github.com/user-attachments/assets/8f64eaed-14f0-44ea-9430-69fec33673a7)
+![kq2](https://github.com/user-attachments/assets/535c6148-405d-4fcb-b693-c14ea7174f21)
+
 
 ## Key Features
 
