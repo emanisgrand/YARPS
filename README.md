@@ -66,10 +66,10 @@ YARPS is designed to make your karaoke nights more organized and enjoyable. It e
 
 ## Future Updates
 
-We're constantly working to improve YARPS. Here are some features we're planning for future updates:
+We're constantly working to improve YARPS. Here are some features I'm planning for future updates:
 
-1. Enhanced Queue UI: We're working on updating the queue interface to make it even more user-friendly and visually appealing.
+1. Enhanced Queue UI: I'm working on updating the queue interface to make it even more user-friendly and visually appealing.
 
-2. Remote Access Feature: We're developing a feature that will allow singers to remotely access the queue list. This will make it even easier for participants to check their position in the queue without approaching the DJ station.
+2. Remote Access Feature: I'm developing a feature that will allow singers to remotely access the queue list. This will make it even easier for participants to check their position in the queue without approaching the DJ station.
 
 Stay tuned for these exciting updates!
