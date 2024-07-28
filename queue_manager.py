@@ -20,7 +20,13 @@ class QueueManager:
             self.singer_cache[name] = singer
             self.entry_counter += 1
 
-        self.queue.append(singer)
+        insert_position = len(self.queue)
+        for i, queued_singer in enumerate(self.queue):
+            if queued_singer.performance_count > 0 and singer.performance_count == 0:
+                insert_position = i
+                break
+
+        self.queue.insert(insert_position, singer)
         self.save_singer_cache()
         return singer
 
