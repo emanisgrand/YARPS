@@ -192,13 +192,17 @@ class InfoFrame(ttk.Frame):
         self.update_ticker()
 
     def remove_from_queue(self):
-        removed_singer = self.queue_manager.remove_from_queue()
-        if removed_singer:
-            self.app.update_queue_frame()
-            if self.selected_singer == removed_singer:
+        if self.selected_singer:
+            if self.selected_singer in self.queue_manager.queue:
+                self.queue_manager.queue.remove(self.selected_singer)
+                self.app.update_queue_frame()
                 self.update_selected_singer(None)
+                self.queue_manager.save_singer_cache()
+                messagebox.showinfo("Singer Removed", f"{self.selected_singer.name} has been removed from the queue.")
+            else:
+                messagebox.showinfo("Not in Queue", f"{self.selected_singer.name} is not currently in the queue.")
         else:
-            messagebox.showinfo("Queue Empty", "There are no singers in the queue to remove.")
+            messagebox.showinfo("No Selection", "Please select a singer to remove from the queue.")
         self.update_ticker()
 
     def move_to_next_in_queue(self):
