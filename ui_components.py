@@ -123,6 +123,9 @@ class InfoFrame(ttk.Frame):
         self.selected_singer_label = ttk.Label(self, text="Selected Singer:")
         self.selected_singer_label.pack()
 
+        self.performance_count_label = ttk.Label(self, text="Performances: 0")
+        self.performance_count_label.pack()
+
         self.song_dropdown = ttk.Combobox(self, state="readonly")
         self.song_dropdown.pack()
         self.song_dropdown.bind("<<ComboboxSelected>>", self.on_song_selected)
@@ -146,10 +149,12 @@ class InfoFrame(ttk.Frame):
         self.selected_singer = singer
         if singer:
             self.selected_singer_label.config(text=f"Selected Singer: {singer.name}")
-            self.song_dropdown['values'] = singer.songs
+            self.performance_count_label.config(text=f"Performances: {singer.performance_count}")
+            self.song_dropdown['values'] = self.queue_manager.get_songs_for_singer(singer.name)
             self.song_dropdown.set(singer.current_song)
         else:
             self.selected_singer_label.config(text="Selected Singer: None")
+            self.performance_count_label.config(text="Performances: 0")
             self.song_dropdown.set('')
             self.song_dropdown['values'] = []
     
@@ -160,7 +165,7 @@ class InfoFrame(ttk.Frame):
         if self.selected_singer:
             new_song = self.song_dropdown.get()
             if new_song:
-                self.selected_singer.set_current_song(new_song)
+                self.selected_singer.current_song = new_song
                 self.app.update_queue_frame()
                 self.queue_manager.save_singer_cache()
                 self.update_ticker()
@@ -169,22 +174,19 @@ class InfoFrame(ttk.Frame):
                 print("No song selected")
         else:
             print("No singer selected")
-            print("on_song_selected called")
 
     def add_song_to_singer(self):
         if self.selected_singer:
             new_song = self.new_song_entry.get()
             if new_song:
-                if self.selected_singer.add_song(new_song):
-                    self.song_dropdown['values'] = self.selected_singer.songs
-                    self.song_dropdown.set(new_song)
-                    self.selected_singer.set_current_song(new_song)
-                    self.new_song_entry.delete(0, tk.END)
-                    self.app.update_queue_frame()
-                    self.queue_manager.save_singer_cache()  # Save cache after adding a song
-                    print(f"New song '{new_song}' added to {self.selected_singer.name}'s list and cache saved.")
-                else:
-                    print(f"Song '{new_song}' already exists in {self.selected_singer.name}'s list.")
+                self.queue_manager.singer_cache[self.selected_singer.name]['songs'].add(new_song)
+                self.song_dropdown['values'] = self.queue_manager.get_songs_for_singer(self.selected_singer.name)
+                self.song_dropdown.set(new_song)
+                self.selected_singer.current_song = new_song
+                self.new_song_entry.delete(0, tk.END)
+                self.app.update_queue_frame()
+                self.queue_manager.save_singer_cache()
+                print(f"New song '{new_song}' added to {self.selected_singer.name}'s list and cache saved.")
             else:
                 print("No new song entered.")
         else:
@@ -192,17 +194,13 @@ class InfoFrame(ttk.Frame):
         self.update_ticker()
 
     def remove_from_queue(self):
-        if self.selected_singer:
-            if self.selected_singer in self.queue_manager.queue:
-                self.queue_manager.queue.remove(self.selected_singer)
-                self.app.update_queue_frame()
+        removed_singer = self.queue_manager.remove_from_queue()
+        if removed_singer:
+            self.app.update_queue_frame()
+            if self.selected_singer == removed_singer:
                 self.update_selected_singer(None)
-                self.queue_manager.save_singer_cache()
-                messagebox.showinfo("Singer Removed", f"{self.selected_singer.name} has been removed from the queue.")
-            else:
-                messagebox.showinfo("Not in Queue", f"{self.selected_singer.name} is not currently in the queue.")
         else:
-            messagebox.showinfo("No Selection", "Please select a singer to remove from the queue.")
+            messagebox.showinfo("Queue Empty", "There are no singers in the queue to remove.")
         self.update_ticker()
 
     def move_to_next_in_queue(self):
